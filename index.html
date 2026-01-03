@@ -76,15 +76,8 @@ h1 {
 
 <script>
 // ===== SETTINGS =====
-const TOTAL_BOXES = 2000; // start with 2000 boxes
-const SECRET = "1234";    // your secret admin code
-let ADMIN = false;         // default is viewer mode
-
-// Check URL for admin secret
-const urlParams = new URLSearchParams(window.location.search);
-if (urlParams.get('admin') === SECRET) {
-  ADMIN = true;
-}
+const TOTAL_BOXES = 2000; // you can increase later
+const ADMIN = true; // set true for your account only
 
 // ===== ELEMENTS =====
 const wall = document.getElementById("wall");
@@ -100,15 +93,22 @@ for (let i = 0; i < TOTAL_BOXES; i++) {
   box.className = "box";
 
   box.addEventListener("click", () => {
+    const img = box.querySelector("img");
+
     if (ADMIN) {
-      const url = prompt("Paste image URL to add to this box:");
-      if (!url) return;
-      const img = document.createElement("img");
-      img.src = url;
-      box.innerHTML = "";
-      box.appendChild(img);
+      // Admin: click to add OR view
+      if (!img) {
+        const url = prompt("Paste image URL to add to this box:");
+        if (!url) return;
+        const newImg = document.createElement("img");
+        newImg.src = url;
+        box.innerHTML = "";
+        box.appendChild(newImg);
+      } else {
+        openPopup(img.src);
+      }
     } else {
-      const img = box.querySelector("img");
+      // Viewer mode: only view popup
       if (img) openPopup(img.src);
     }
   });
