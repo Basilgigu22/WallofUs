@@ -75,11 +75,18 @@ h1 {
 </div>
 
 <script>
-// SETTINGS
-const TOTAL_BOXES = 2000; // start with 2000, increase later
-const ADMIN = false; // true = you can add photos, false = view-only
+// ===== SETTINGS =====
+const TOTAL_BOXES = 2000; // start with 2000 boxes
+const SECRET = "1234";    // your secret admin code
+let ADMIN = false;         // default is viewer mode
 
-// ELEMENTS
+// Check URL for admin secret
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('admin') === SECRET) {
+  ADMIN = true;
+}
+
+// ===== ELEMENTS =====
 const wall = document.getElementById("wall");
 const popup = document.getElementById("popup");
 const popupImg = document.getElementById("popupImg");
@@ -87,7 +94,7 @@ const zoomSlider = document.getElementById("zoomSlider");
 
 let scale = 1;
 
-// CREATE BOXES
+// ===== CREATE BOXES =====
 for (let i = 0; i < TOTAL_BOXES; i++) {
   const box = document.createElement("div");
   box.className = "box";
@@ -109,7 +116,7 @@ for (let i = 0; i < TOTAL_BOXES; i++) {
   wall.appendChild(box);
 }
 
-// POPUP FUNCTIONS
+// ===== POPUP FUNCTIONS =====
 function openPopup(src) {
   scale = 1;
   popupImg.style.transform = "scale(1)";
@@ -124,7 +131,8 @@ function closePopup(e) {
   }
 }
 
-// ZOOM WITH WHEEL
+// ===== ZOOM =====
+// Wheel zoom for desktop
 popupImg.addEventListener("wheel", e => {
   e.preventDefault();
   scale += e.deltaY * -0.001;
@@ -133,7 +141,7 @@ popupImg.addEventListener("wheel", e => {
   zoomSlider.value = scale;
 });
 
-// SLIDER ZOOM
+// Slider zoom
 zoomSlider.addEventListener("input", () => {
   scale = zoomSlider.value;
   popupImg.style.transform = `scale(${scale})`;
