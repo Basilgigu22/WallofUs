@@ -11,35 +11,6 @@ body {
   background: white;
   font-family: Arial, sans-serif;
 }
-  body {
-  margin: 0;
-  background: white;
-  font-family: Arial, sans-serif;
-}
-
-/* <-- after this closing } paste the popup CSS below */
-#popup {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.85);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  z-index: 10;
-}
-
-#popup img {
-  max-width: 90%;
-  max-height: 90%;
-  transition: transform 0.2s ease;
-}
-
-#zoomSlider {
-  width: 200px;
-  margin-top: 10px;
-}
-
 
 h1 {
   text-align: center;
@@ -66,6 +37,29 @@ h1 {
   height: 100%;
   object-fit: cover;
 }
+
+/* POPUP CSS */
+#popup {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  z-index: 10;
+}
+
+#popup img {
+  max-width: 90%;
+  max-height: 90%;
+  transition: transform 0.2s ease;
+}
+
+#zoomSlider {
+  width: 200px;
+  margin-top: 10px;
+}
 </style>
 </head>
 
@@ -73,13 +67,19 @@ h1 {
 
 <h1>WallofUs</h1>
 <div id="wall"></div>
-  <div id="popup" onclick="closePopup()">
+
+<!-- POPUP -->
+<div id="popup" onclick="closePopup(event)">
   <img id="popupImg">
   <input type="range" id="zoomSlider" min="1" max="4" step="0.01" value="1">
 </div>
 
 <script>
-  const TOTAL_BOXES = 2000; // your current number
+// SETTINGS
+const TOTAL_BOXES = 2000; // start with 2000, increase later
+const ADMIN = true; // true = you can add photos, false = view-only
+
+// ELEMENTS
 const wall = document.getElementById("wall");
 const popup = document.getElementById("popup");
 const popupImg = document.getElementById("popupImg");
@@ -87,20 +87,29 @@ const zoomSlider = document.getElementById("zoomSlider");
 
 let scale = 1;
 
+// CREATE BOXES
 for (let i = 0; i < TOTAL_BOXES; i++) {
   const box = document.createElement("div");
   box.className = "box";
 
   box.addEventListener("click", () => {
-    const img = box.querySelector("img");
-    if (!img) return;
-    openPopup(img.src);
+    if (ADMIN) {
+      const url = prompt("Paste image URL to add to this box:");
+      if (!url) return;
+      const img = document.createElement("img");
+      img.src = url;
+      box.innerHTML = "";
+      box.appendChild(img);
+    } else {
+      const img = box.querySelector("img");
+      if (img) openPopup(img.src);
+    }
   });
 
   wall.appendChild(box);
 }
 
-// OPEN POPUP
+// POPUP FUNCTIONS
 function openPopup(src) {
   scale = 1;
   popupImg.style.transform = "scale(1)";
@@ -109,14 +118,13 @@ function openPopup(src) {
   popup.style.display = "flex";
 }
 
-// CLOSE POPUP
 function closePopup(e) {
   if (e.target !== popupImg && e.target !== zoomSlider) {
     popup.style.display = "none";
   }
 }
 
-// WHEEL ZOOM (desktop)
+// ZOOM WITH WHEEL
 popupImg.addEventListener("wheel", e => {
   e.preventDefault();
   scale += e.deltaY * -0.001;
@@ -130,9 +138,6 @@ zoomSlider.addEventListener("input", () => {
   scale = zoomSlider.value;
   popupImg.style.transform = `scale(${scale})`;
 });
-
-
-   
 </script>
 
 </body>
