@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>WallofUs</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  body {
+    margin: 0;
+    background: white;
+    font-family: Arial, sans-serif;
+  }
+
+  h1 {
+    text-align: center;
+    margin: 20px 0;
+  }
+
+  #wall {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+    gap: 1px;
+    padding: 10px;
+  }
+
+  .box {
+    width: 100%;
+    aspect-ratio: 1;
+    border: 1px solid black;
+    overflow: hidden;
+    cursor: pointer;
+    background: white;
+  }
+
+  .box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* popup */
+  #popup {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #popup img {
+    max-width: 90%;
+    max-height: 90%;
+    transform-origin: center;
+  }
+</style>
+</head>
+
+<body>
+<h1>WallofUs</h1>
+
+<div id="wall"></div>
+
+<div id="popup" onclick="closePopup()">
+  <img id="popupImg">
+</div>
+
+<script>
+  const wall = document.getElementById("wall");
+  const TOTAL_BOXES = 500; // start small, increase later
+
+  for (let i = 0; i < TOTAL_BOXES; i++) {
+    const box = document.createElement("div");
+    box.className = "box";
+
+    box.onclick = () => openPopup(box.querySelector("img")?.src);
+
+    wall.appendChild(box);
+  }
+
+  function openPopup(src) {
+    if (!src) return;
+    document.getElementById("popupImg").src = src;
+    document.getElementById("popup").style.display = "flex";
+  }
+
+  function closePopup() {
+    document.getElementById("popup").style.display = "none";
+  }
+</script>
+
+</body>
+</html>
