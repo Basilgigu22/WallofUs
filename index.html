@@ -11,6 +11,35 @@ body {
   background: white;
   font-family: Arial, sans-serif;
 }
+  body {
+  margin: 0;
+  background: white;
+  font-family: Arial, sans-serif;
+}
+
+/* <-- after this closing } paste the popup CSS below */
+#popup {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  z-index: 10;
+}
+
+#popup img {
+  max-width: 90%;
+  max-height: 90%;
+  transition: transform 0.2s ease;
+}
+
+#zoomSlider {
+  width: 200px;
+  margin-top: 10px;
+}
+
 
 h1 {
   text-align: center;
@@ -44,28 +73,66 @@ h1 {
 
 <h1>WallofUs</h1>
 <div id="wall"></div>
+  <div id="popup" onclick="closePopup()">
+  <img id="popupImg">
+  <input type="range" id="zoomSlider" min="1" max="4" step="0.01" value="1">
+</div>
 
 <script>
-const TOTAL_BOXES = 2000;
-
+  const TOTAL_BOXES = 2000; // your current number
 const wall = document.getElementById("wall");
+const popup = document.getElementById("popup");
+const popupImg = document.getElementById("popupImg");
+const zoomSlider = document.getElementById("zoomSlider");
+
+let scale = 1;
 
 for (let i = 0; i < TOTAL_BOXES; i++) {
   const box = document.createElement("div");
   box.className = "box";
 
   box.addEventListener("click", () => {
-    const url = prompt("Paste image URL");
-    if (!url) return;
-
-    const img = document.createElement("img");
-    img.src = url;
-    box.innerHTML = "";
-    box.appendChild(img);
+    const img = box.querySelector("img");
+    if (!img) return;
+    openPopup(img.src);
   });
 
   wall.appendChild(box);
 }
+
+// OPEN POPUP
+function openPopup(src) {
+  scale = 1;
+  popupImg.style.transform = "scale(1)";
+  popupImg.src = src;
+  zoomSlider.value = 1;
+  popup.style.display = "flex";
+}
+
+// CLOSE POPUP
+function closePopup(e) {
+  if (e.target !== popupImg && e.target !== zoomSlider) {
+    popup.style.display = "none";
+  }
+}
+
+// WHEEL ZOOM (desktop)
+popupImg.addEventListener("wheel", e => {
+  e.preventDefault();
+  scale += e.deltaY * -0.001;
+  scale = Math.min(Math.max(1, scale), 4);
+  popupImg.style.transform = `scale(${scale})`;
+  zoomSlider.value = scale;
+});
+
+// SLIDER ZOOM
+zoomSlider.addEventListener("input", () => {
+  scale = zoomSlider.value;
+  popupImg.style.transform = `scale(${scale})`;
+});
+
+
+   
 </script>
 
 </body>
